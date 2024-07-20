@@ -1,31 +1,14 @@
-import { View, Text, Image, Touchable, TouchableOpacity, Modal } from 'react-native'
+import { View, Text, Image, TouchableOpacity, Alert } from 'react-native'
 import { icons } from '../constants';
 import { useState } from 'react';
 import { ResizeMode, Video } from 'expo-av';
 
-const VideoCard = ({videos}) => {
+const VideoCard = ({videos, pathname, toggleBookmark}) => {
   const {title, thumbnail, video, users} = videos;
   const {username, avatar} = users;
   const [play, setPlay] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const openOption = () => {
-    setModalVisible(true);
-  }
   return (
     <View className="flex-col items-center px-4 mb-14">
-      <Modal
-        animationType='fade'
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View className="w-full h-full px-4 justify-center items-center">
-          <View className="bg-primary border-2 border-black-200 justify-center items-center w-full h-20">
-            <Text className="text-white font-pmedium text-lg">bonjour</Text>
-          </View>
-
-        </View>
-      </Modal>
       <View className="flex-row gap-3 items-center">
         <View className="justify-center  flex-row flex-1">
           <View className="w-[46px] h-[46px] rounded-lg p-0.5">
@@ -36,9 +19,19 @@ const VideoCard = ({videos}) => {
             <Text className="text-xs text-gray-100 font-pregular" numberOfLines={1}>{username}</Text>
           </View>
         </View>
-        <TouchableOpacity className="pt-2 " onPress={openOption}>
-          <Image source={icons.menu} className="w-5 h-5" resizeMode='contain'/>
-        </TouchableOpacity>
+        {
+          pathname != undefined && (pathname.startsWith("/home") || pathname.startsWith("/bookmark")) ?
+          (
+            <TouchableOpacity className="pt-2 " onPress={() => {toggleBookmark(videos.$id)}}>
+              <Image source={icons.menu} className="w-5 h-5" resizeMode='contain'/>
+            </TouchableOpacity>
+          ) : (
+            <View className="pt-2">
+              <Image source={icons.menu} className="w-5 h-5" resizeMode='contain'/>
+            </View>
+          )
+        }
+        
       </View>
       {play ? (
         <View className="w-full h-60 rounded-xl overflow-hidden mt-3">

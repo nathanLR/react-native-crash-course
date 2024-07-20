@@ -5,20 +5,26 @@ import { images } from '../../constants'
 import SearchInput from '../../components/SearchInput'
 import Trending from '../../components/Trending'
 import EmptyState from '../../components/EmptyState'
-import { getAllPosts, getTrendingPosts } from '../../lib/appwrite'
+import { createBookmark, getAllPosts, getTrendingPosts } from '../../lib/appwrite'
 import useAppwrite from '../../lib/useAppwrite'
 import VideoCard from '../../components/VideoCard'
 import { useGlobalContext } from '../../context/GlobalProvider'
+import { usePathname } from 'expo-router'
 
 const Home = () => {
   const {data: posts, refetch} = useAppwrite(getAllPosts);
   const {data: trendingPosts} = useAppwrite(getTrendingPosts);
   const {user} = useGlobalContext();
+  const pathname = usePathname();
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = async () => {
     setRefreshing(true);
     await refetch();
     setRefreshing(false);
+  }
+  const toggleBookmark = async (videoId) => {
+      Alert.alert("Info", "This video has been bookmarked");
+      await createBookmark(user.$id, videoId);
   }
   return (
     <SafeAreaView className="bg-primary h-full">
@@ -26,7 +32,7 @@ const Home = () => {
         data={posts}
         keyExtractor={(item) => item.$id}
         renderItem={({item}) => (
-          <VideoCard videos={item}/>
+          <VideoCard videos={item} pathname={pathname} toggleBookmark={toggleBookmark}/>
         )}
         ListHeaderComponent={() => (
           <View className="my-6 px-4 space-y-6">
